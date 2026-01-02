@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/mainHeader::header">
+<meta charset="utf-8" />
+<title>Arsip</title>
+</head>
+
+<body class="fix-header card-no-border">
+	<div id="main-wrapper">
+		<div th:replace="fragments/mainMenu::menu"></div>
+
+		<div class="page-wrapper">
+			<div class="container-fluid">
+				<div class="alert alert-info" th:if="${status == 'success'}">
+					<span class="text-info"><i class="fa fa-check-circle"></i> <span
+						th:text="${message}"></span></span>
+					<button type="button" class="close" data-dismiss="alert"
+						aria-label="Close">
+						<span aria-hidden="true">×</span>
+					</button>
+				</div>
+				<div class="row">
+					<div class="col-12">
+						<div class="card">
+							<div class="card-body">
+								<div class="row">
+									<div class="col-5">
+										<h4 class="card-title">Arsip</h4>
+										<h6 class="card-subtitle">
+											<a th:href="@{'/dashboard'}">Dashboard</a> / List Arsip
+										</h6>
+									</div>
+									<!-- <div class="col-7" align="right">
+									<a th:if="${#lists.contains({'Staff Arsip', 'Admin'}, user)}" th:href="@{'/arsip/new'}" class="btn waves-effect waves-light btn-info"><i class="mdi mdi-plus-circle-outline"></i> Upload Document</a>
+									</div> -->
+								</div>
+								<div class="row">
+									<div class="col-md-12 grid-margin stretch-card">
+										<div class="card">
+											<div class="card-body">
+											<div class="row mb-3">
+										        <div class="col-md-4">
+										            <input type="text"
+										                   id="customSearch"
+										                   class="form-control"
+										                   placeholder="Search document...">
+										        </div>
+										    </div>
+												<div class="table-responsive">
+													<table id="dataTableExample" class="table">
+														<thead>
+															<tr>
+																<th width="5%">No</th>
+																<th width="15%">Document Code</th>
+																<th width="25%">Document Name</th>
+																<th>Filename</th>
+																<th width="20%">Upload Date</th>
+																<th width="20%" class="text-center">Action</th>
+															</tr>
+														</thead>
+														<tbody>
+															<tr th:each="row, no : ${listArsip}">
+																<td th:text="${no.index + 1}" />
+																<td th:text="${row.docCode}" />
+																<td th:text="${row.docName}" />
+																<td th:text="${row.fileName}" />
+																<td th:text="${row.uploadDate}" />
+																<td class="text-center">
+																	<button type="button" class="btn btn-info btn-xs"
+																		title="Preview"
+																		th:data-content="${row.content}"
+																		th:data-type="${row.fileType}"
+																		th:data-filename="${row.fileName}"
+        																onclick="previewPDF(this)"><i class="fas fa-eye"></i></button>
+        																<button type="button"
+																	        class="btn btn-warning btn-xs"
+																	        th:if="${user == 'Sekretaris'}"
+																	        onclick="openDetailModal(this)"
+																	        th:data-comment="${row.comment != null ? row.comment : ''}">
+																	    Detail
+																	</button>
+        																<button type="button" class="btn btn-info btn-xs"
+																		title="Preview"
+																		th:data-content="${row.content}"
+																		th:data-type="${row.fileType}"
+																		th:data-filename="${row.fileName}"
+        																onclick="downloadPdf(this)">Download</button>
+																</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div id="pdfModal" style="display: none; position: fixed; top: 5%; left: 5%; width: 90%; height: 90%;
+            								background: white; border: 1px solid #ccc; z-index: 9999;
+            								box-shadow: 0 0 15px rgba(0,0,0,0.3); padding: 10px;">
+  									<button onclick="closePDF()" style="float: right; margin: 20px;">✖</button>
+  										<iframe id="pdfViewer" width="100%" height="90%"></iframe>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<div class="modal fade" id="detailModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Document Detail</h5>
+          <button type="button" class="close" data-dismiss="modal">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Decision</label>
+            <input type="text" id="detailDecision" class="form-control" readonly>
+          </div>
+          <div class="form-group">
+            <label>Comment</label>
+            <textarea id="detailComment" class="form-control" rows="4" readonly></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+	<div th:replace="fragments/mainFooter::footer"></div>
+	<script>
+  function previewPDF(button) {
+    const base64 = button.getAttribute('data-content');
+    const fileType = button.getAttribute('data-type');
+    if (!base64) {
+      alert('No file content found.');
+      return;
+    }
+    
+    if(fileType === 'application/pdf'){
+    	const pdfUrl = "data:application/pdf;base64," + base64;
+        const viewer = document.getElementById("pdfViewer");
+        viewer.src = pdfUrl;
+
+        document.getElementById("pdfModal").style.display = "block";
+        
+        document.getElementById("pdfViewer").src =
+        	  "data:application/pdf;base64," + base64 + "#toolbar=0";
+    }else{
+    	alert('Unsupported file type: ' + fileType);
+    }
+  }
+
+  function closePDF() {
+    document.getElementById("pdfModal").style.display = "none";
+    document.getElementById("pdfViewer").src = "";
+  }
+  
+  function downloadPdf(button) {
+	  const base64 = button.getAttribute('data-content');
+	  const filename = button.getAttribute('data-filename');
+	  
+	  const token = document.querySelector('meta[name="_csrf"]').content;
+	  const header = document.querySelector('meta[name="_csrf_header"]').content;
+
+	  if (!base64) {
+	    alert('File tidak ditemukan');
+	    return;
+	  }
+
+	  fetch('/riwayat/save', {
+	    method: 'POST',
+	    headers: {
+	      'Content-Type': 'application/json',
+	      [header]: token
+	    },
+	    body: JSON.stringify({
+	      desription: "Downloaded File " + filename,
+	      action: "arsip"
+	    })
+	  })
+	  .then(response => {
+	    if (!response.ok) {
+	      throw new Error('Gagal menyimpan riwayat');
+	    }
+
+	    // 👉 download SETELAH save sukses
+	    downloadBase64Pdf(base64, filename);
+	  })
+	  .catch(err => {
+	    console.error(err);
+	    alert('Gagal menyimpan riwayat download');
+	  });
+	}
+  
+  function downloadBase64Pdf(base64, filename) {
+	    const byteCharacters = atob(base64);
+	    const byteNumbers = new Array(byteCharacters.length);
+
+	    for (let i = 0; i < byteCharacters.length; i++) {
+	        byteNumbers[i] = byteCharacters.charCodeAt(i);
+	    }
+
+	    const byteArray = new Uint8Array(byteNumbers);
+	    const blob = new Blob([byteArray], { type: 'application/pdf' });
+
+	    const link = document.createElement('a');
+	    link.href = URL.createObjectURL(blob);
+	    link.download = filename;
+	    document.body.appendChild(link);
+	    link.click();
+
+	    URL.revokeObjectURL(link.href);
+	    document.body.removeChild(link);
+	}
+  
+  function openDetailModal(button) {
+	    const comment = button.getAttribute("data-comment");
+
+	    document.getElementById("detailDecision").value = 'approve';
+	    document.getElementById("detailComment").value = comment;
+
+	    $('#detailModal').modal('show');
+	}
+  
+  $(document).ready(function () {
+	    const table = $('#dataTableExample').DataTable({
+	        dom: 'rt<"bottom"ip>'
+	    });
+
+	    $('#customSearch').on('keyup', function () {
+	        table.search(this.value).draw();
+	    });
+	});
+</script>
+</body>
+</html>

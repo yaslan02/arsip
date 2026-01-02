@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/mainHeader::header">
+<meta charset="utf-8" />
+<title>Penjualan</title>
+</head>
+
+<body class="fix-header card-no-border">
+	<div id="main-wrapper">
+		<div th:replace="fragments/mainMenu::menu"></div>
+
+		<div class="page-wrapper">
+			<div class="container-fluid">
+				<div class="alert alert-info" th:if="${status == 'success'}">
+					<span class="text-info"><i class="fa fa-check-circle"></i> <span
+						th:text="${message}"></span></span>
+					<button type="button" class="close" data-dismiss="alert"
+						aria-label="Close">
+						<span aria-hidden="true">×</span>
+					</button>
+				</div>
+				<div class="row">
+					<div class="col-12">
+						<div class="card">
+							<div class="card-body">
+								<div class="row">
+									<div class="col-5">
+										<h4 class="card-title">Form Absensi</h4>
+										<h6 class="card-subtitle">
+											<a th:href="@{'/dashboard'}">Dashboard</a> / Absensi
+										</h6>
+									</div>
+									<div class="col-7" align="right">
+									<!-- <a th:href="@{'/user/new'}" class="btn waves-effect waves-light btn-info"><i class="mdi mdi-plus-circle-outline"></i> Absensi</a> -->
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-md-12 grid-margin stretch-card">
+										<div class="card">
+											<div class="card-body">
+												<form class="userform" id="idUserForm">
+													<fieldset>
+													<input type="text" id="idId" readonly hidden/>
+														<div class="form-group row p-b-15">
+															<label
+																class="col-sm-3 text-right control-label col-form-label"><span
+																class="text-danger">*</span> Nama Karyawan</label>
+															<div class="col-sm-7">
+																<input type="text" id="idName"
+																	class="form-control"
+																	placeholder="Silahkan isi nama karyawan" maxlength="100"
+																	autocomplete="off" required readonly/>
+															</div>
+														</div>
+														<div class="form-group row p-b-15">
+															<label
+																class="col-sm-3 text-right control-label col-form-label"><span
+																class="text-danger">*</span> Tanggal</label>
+															<div class="col-sm-7">
+																<input type="text" id="idDate"
+																	class="form-control"
+																	placeholder="Silahkan isi tanggal" maxlength="100"
+																	autocomplete="off" required readonly/>
+															</div>
+														</div>
+														<div class="form-group row p-b-15">
+															<label
+																class="col-sm-3 text-right control-label col-form-label"><span
+																class="text-danger">*</span> Status</label>
+															<div class="col-sm-7">
+																<select id="idStatus" class="form-control" style="width: 255px" required>
+																	<option value="" readonly>--Pilih--</option>
+																	<option value="Hadir">Hadir</option>
+																	<option value="Tidak Hadir">Tidak Hadir</option>
+																	<option value="Sakit">Sakit</option>
+																	<option value="Izin">Izin</option>
+																</select>
+															</div>
+														</div>
+														<div id="idDiv" class="form-group row p-b-15">
+															<label
+																class="col-sm-3 text-right control-label col-form-label"><span
+																class="text-danger"></span> Alasan</label>
+															<div class="col-sm-7">
+																<input id="idAlasan" type="text"
+																	class="form-control"
+																	placeholder="Silahkan isi alasan" maxlength="255"
+																	autocomplete="off"/>
+															</div>
+														</div>
+														<input id="idSave" class="btn btn-info" type="submit" value="Save"
+															/> 
+													</fieldset>
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<div th:replace="fragments/mainFooter::footer"></div>
+	<script>
+	$(document).ready(function() {
+		getEmpl();
+		$("#idDiv").hide();
+		if($('#idStatus').val() == 'Izin'){
+			$("#idDiv").show();
+		}
+		if($('#idStatus').val() != ""){
+			$('#idStatus').attr('readonly', true);
+			$('#idAlasan').attr('readonly', true);
+		}
+		$('#idStatus').change(function () {
+			if($('#idStatus').val() == 'Izin'){
+				$("#idDiv").show();
+			}else{
+				$("#idDiv").hide();
+			}
+		});
+		
+		function getEmpl() {
+			let url = new URL(window.location.href);
+			url = 'http://localhost:8889';
+				$.ajax({
+					type : 'get',
+					url : url + '/absensi/list',
+					success : function(data) {
+						debugger;
+						var json = JSON.parse(data);
+						$('#idId').val(json.id);
+						$('#idName').val(json.name);
+						$('#idDate').val(json.dateAbsen);
+						$('#idStatus').val(json.status);
+						$('#idAlasan').val(json.alasan);
+						
+						if($('#idStatus').val() == 'Izin'){
+							$("#idDiv").show();
+						}
+						if($('#idStatus').val() != ""){
+							$('#idStatus').attr('readonly', true);
+							$('#idAlasan').attr('readonly', true);
+							$('#idSave').attr('disabled', true);
+						}
+					},
+				});
+		};
+		
+		$('#idSave').click(function() {
+			debugger;
+			var alasan = "";
+			if($('#idAlasan').val() != ""){
+				alasan = "&alasan="+$('#idAlasan').val();
+			}
+			let url = new URL(window.location.href);
+			url = 'http://localhost:8889/absen/save?idUser='+$('#idId').val()+"&status="+$('#idStatus').val()+alasan;
+				$.ajax({
+					type : 'get',
+					url : url,
+					success : function(data) {
+						window.location.href = "/absen/save/"+data
+					},
+				});
+		});
+	});
+	
+	</script>
+</body>
+</html>

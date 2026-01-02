@@ -1,0 +1,22 @@
+.sidebar-footer .dropdown-menu{
+    left: 93px!important;
+    top: -142px!important;
+}
+.user-profile .profile-img img{
+    cursor: pointer;
+}
+.sidebar-footer a{
+    padding: 8px 1rem;
+    font-size: 1rem;
+}
+.sidebar-footer .profile-text{
+    cursor: pointer;
+    padding-top: 10px;
+}
+.sidebar-footer a.dropdown-item{
+    width: 100%;
+    text-align: left;
+}
+.scroll-sidebar {
+    padding-bottom: 86px;
+}

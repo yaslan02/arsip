@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/mainHeader::header">
+<meta charset="utf-8" />
+<title>Penjualan</title>
+</head>
+
+<body class="fix-header card-no-border">
+	<div id="main-wrapper">
+		<div th:replace="fragments/mainMenu::menu"></div>
+
+		<div class="page-wrapper">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-12">
+						<div class="card">
+							<div class="card-body">
+								<div class="row">
+									<div class="col-12">
+										<h4 class="card-title">Order</h4>
+										<h6 class="card-subtitle">
+											<a th:href="@{'/dashboard'}">Dashboard</a> / <a
+												th:href="@{'/item'}">Order</a> / Tambah Order
+										</h6>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-md-12 grid-margin stretch-card">
+										<div class="card">
+											<div class="card-body">
+												<form class="orderform" id="idOrderForm"
+													autocomplete="off">
+													<fieldset>
+														<div class="form-group row p-b-15">
+															<label
+																class="col-sm-3 text-right control-label col-form-label"><span
+																class="text-danger">*</span>Item</label>
+															<div class="col-sm-7">
+																<select id="idGroup" class="form-control">
+																<option value="">Pilih Item</option>
+																</select>
+															</div>
+														</div>
+														<div id="idDiv" class="form-group row p-b-15">
+															<label
+																class="col-sm-3 text-right control-label col-form-label"><span
+																class="text-danger">*</span> Stok Item</label>
+															<div class="col-sm-7">
+																<input type="text" id="idStok"
+																	class="form-control"
+																	autocomplete="off" required readonly="readonly"/>
+															</div>
+														</div>
+														<div class="form-group row p-b-15">
+															<label
+																class="col-sm-3 text-right control-label col-form-label"><span
+																class="text-danger">*</span> Harga</label>
+															<div class="col-sm-7">
+																<input type="text" id="idHarga"
+																	class="form-control"
+																	autocomplete="off" required readonly="readonly"/>
+															</div>
+														</div>
+														<div class="form-group row p-b-15">
+															<label
+																class="col-sm-3 text-right control-label col-form-label"><span
+																class="text-danger">*</span> Jumlah Order</label>
+															<div class="col-sm-7">
+																<input type="text" id="idJumlah"
+																	class="form-control"
+																	placeholder="Silahkan isi jumlah" maxlength="100"
+																	autocomplete="off" required />
+															</div>
+														</div>
+														<div class="form-group row p-b-15">
+															<label
+																class="col-sm-3 text-right control-label col-form-label"><span
+																class="text-danger">*</span> Total Harga</label>
+															<div class="col-sm-7">
+																<input type="text" id="idTotalHarga"
+																	class="form-control" maxlength="100"
+																	autocomplete="off" required readonly="readonly" />
+															</div>
+														</div>
+														<button type="button" id="idSave"
+															class="btn waves-effect waves-light btn-info">
+															<i></i>Save
+															</button>
+													</fieldset>
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<div th:replace="fragments/mainFooter::footer"></div>
+	
+	<script>
+	
+	$(document).ready(function() {
+		
+		$("#idGroup").prop('disabled', true); 
+		$('#idDiv').hide();
+		
+		getItem();
+		
+		function getItem() {
+			let url = new URL(window.location.href);
+			url = 'http://localhost:8889';
+				$.ajax({
+					type : 'get',
+					url : url + '/item/findAll',
+					success : function(data) {
+						var json = JSON.parse(data);
+						var allData = '<option value=""	>Pilih Item</option>';
+						for(var  i=0;i< json.length;i++)
+			            {
+			                allData += "<option value='"+json[i].id+"'>"+json[i].name+"</option>";
+			            }
+						
+						$("#idGroup").html(allData);
+						$("#idGroup").prop('disabled', false);
+					},
+				});
+		}
+		
+		$('#idGroup').change(function () {
+			var valItem = $('#idGroup').val();
+			let url = new URL(window.location.href);
+			url = 'http://localhost:8889';
+				$.ajax({
+					type : 'get',
+					url : url + '/find/item/'+valItem,
+					success : function(data) {
+						var json = JSON.parse(data);
+						$('#idHarga').val(json.price);
+						$('#idJumlah').val("");
+						$('#idTotalHarga').val("");
+						$('#idDiv').show();
+						$('#idStok').val(json.stok);
+					},
+				});
+		});
+		
+		$('#idJumlah').keyup(function() {
+			$('#idTotalHarga').val(parseInt($('#idJumlah').val()) * parseInt($('#idHarga').val()));
+			
+			if($('#idJumlah').val() > $('#idStok').val()){
+				$('#idJumlah').val($('#idStok').val());
+			}
+			
+			if($('#idJumlah').val() == ""){
+				$('#idTotalHarga').val("");
+			}
+		});
+		
+		$('#idSave').click(function() {
+			let url = new URL(window.location.href);
+			url = 'http://localhost:8889';
+				$.ajax({
+					type : 'get',
+					url : url + '/order/save?idItem='+$('#idGroup').val()+"&jumlah="+$('#idJumlah').val()+"&total="+$('#idTotalHarga').val(),
+					success : function(data) {
+						window.location.href = "/order/save/"+data
+					},
+				});
+		});
+		
+	});
+	
+	</script>
+</body>
+</html>

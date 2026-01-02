@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/mainHeader::header">
+<meta charset="utf-8" />
+<title>Arsip</title>
+</head>
+
+<body class="fix-header card-no-border">
+	<div id="main-wrapper">
+		<div th:replace="fragments/mainMenu::menu"></div>
+
+		<div class="page-wrapper">
+			<div class="container-fluid">
+				<div class="alert alert-info" th:if="${status == 'success'}">
+					<span class="text-info"><i class="fa fa-check-circle"></i> <span
+						th:text="${message}"></span></span>
+					<button type="button" class="close" data-dismiss="alert"
+						aria-label="Close">
+						<span aria-hidden="true">×</span>
+					</button>
+				</div>
+				<div class="row">
+					<div class="col-12">
+						<div class="card">
+							<div class="card-body">
+								<div class="row">
+									<div class="col-5">
+										<h4 class="card-title">Pegawai</h4>
+										<h6 class="card-subtitle">
+											<a th:href="@{'/dashboard'}">Dashboard</a> / List Pegawai	
+										</h6>
+									</div>
+									<div class="col-7" align="right">
+									<a th:href="@{'/user/new'}" class="btn waves-effect waves-light btn-info"><i class="mdi mdi-plus-circle-outline"></i> Tambah Data</a>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-md-12 grid-margin stretch-card">
+										<div class="card">
+											<div class="card-body">
+												<div class="table-responsive">
+													<table id="dataTableExample" class="table">
+														<thead>
+															<tr>
+																<th width="5%">No</th>
+																<th width="20%">Nama Pegawai</th>
+																<th width="15%">Username</th>
+																<th width="15%">No Handphone</th>
+																<th width="30%">Alamat</th>
+																<th width="15%">Jabatan</th>
+																<th width="15%" class="text-center">Action</th>
+															</tr>
+														</thead>
+														<tbody>
+															<tr th:each="row, no : ${listUser}">
+																<td th:text="${no.index + 1}" />
+																<td th:text="${row.name}" />
+																<td th:text="${row.username}" />
+																<td th:text="${row.noHp}" />
+																<td th:text="${row.alamat}" />
+																<td th:text="${row.role}" />
+																<td class="text-center">
+																	<button type="button" class="btn btn-info btn-xs"
+																		th:url="@{/user/}"
+																		th:data-id="${row.id}"
+																		th:onclick="|location.href=this.getAttribute('url') + this.getAttribute('data-id')|">Edit</button>
+																</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<div th:replace="fragments/mainFooter::footer"></div>
+</body>
+</html>

@@ -1,0 +1,19 @@
+package com.arsip.repository;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import com.arsip.entity.MstAbsen;
+
+@Repository
+public interface AbsenRepository extends JpaRepository<MstAbsen, Long>, JpaSpecificationExecutor<MstAbsen>{
+	@Query(value = "select * from mst_absen where DATE_FORMAT(date_absen, \"%d-%m-%Y\") = :startdate", nativeQuery = true)
+	List<MstAbsen> findAbsenNow(@Param("startdate") String startdate);
+	@Query(value = "select * from mst_absen where id_user = :idUser and DATE_FORMAT(date_absen, \"%d-%m-%Y\") = DATE_FORMAT(now(), \"%d-%m-%Y\")", nativeQuery = true)
+	MstAbsen findKaryawan(@Param("idUser") Long idUser);
+}

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/mainHeader::header">
+<meta charset="utf-8" />
+<title>Arsip</title>
+</head>
+
+<body class="fix-header card-no-border">
+	<div id="main-wrapper">
+		<div th:replace="fragments/mainMenu::menu"></div>
+
+		<div class="page-wrapper">
+			<div class="container-fluid">
+				<div class="alert alert-info" th:if="${status == 'success'}">
+					<span class="text-info"><i class="fa fa-check-circle"></i> <span
+						th:text="${message}"></span></span>
+					<button type="button" class="close" data-dismiss="alert"
+						aria-label="Close">
+						<span aria-hidden="true">×</span>
+					</button>
+				</div>
+				<div class="row">
+					<div class="col-12">
+						<div class="card">
+							<div class="card-body">
+								<div class="row">
+									<div class="col-5">
+										<h4 class="card-title">Riwayat Aktivitas</h4>
+										<h6 class="card-subtitle">
+											<a th:href="@{'/dashboard'}">Dashboard</a> / List Riwayat	
+										</h6>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-md-12 grid-margin stretch-card">
+										<div class="card">
+											<div class="card-body">
+											<div class="row mb-3">
+										        <div class="col-md-4">
+										            <input type="text"
+										                   id="customSearch"
+										                   class="form-control"
+										                   placeholder="Search activity...">
+										        </div>
+										    </div>
+												<div class="table-responsive">
+													<table id="dataTableExample" class="table">
+														<thead>
+															<tr>
+																<th width="5%">No</th>
+																<th width="20%">Nama User</th>
+																<th width="15%">Jabatan</th>
+																<th width="20%">Deskripsi</th>
+																<th width="15%">Created Date</th>
+															</tr>
+														</thead>
+														<tbody>
+															<tr th:each="row, no : ${listRiwayat}">
+																<td th:text="${no.index + 1}" />
+																<td th:text="${row.nameUser}" />
+																<td th:text="${row.jabatan}" />
+																<td th:text="${row.desription}" />
+																<td th:text="${row.createdAt}" />
+															</tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<div th:replace="fragments/mainFooter::footer"></div>
+	<script>
+	$(document).ready(function () {
+	    const table = $('#dataTableExample').DataTable({
+	        dom: 'rt<"bottom"ip>'
+	    });
+
+	    $('#customSearch').on('keyup', function () {
+	        table.search(this.value).draw();
+	    });
+	});
+	</script>
+</body>
+</html>

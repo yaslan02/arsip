@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head th:replace="fragments/mainHeader::header">
+
+<body>
+    <div th:fragment="menu">
+        <header class="topbar">
+            <nav class="navbar top-navbar navbar-expand-md navbar-light">
+                <div class="navbar-header">
+                    <a class="navbar-brand" th:href="@{'/dashboard'}"> 
+                    <b> <img
+							 
+							class="dark-logo" />
+					</b> <span> <img 
+							 class="dark-logo" />
+					</span>
+                    </a>
+                </div>
+                <div class="navbar-collapse">
+                    <ul class="navbar-nav mr-auto mt-md-0">
+                        <li class="nav-item"><a class="nav-link nav-toggler hidden-md-up text-muted waves-effect waves-dark" href="javascript:void(0)"><i class="mdi mdi-menu"></i></a></li>
+                        <li class="nav-item m-l-10"><a class="nav-link sidebartoggler hidden-sm-down text-muted waves-effect waves-dark" href="javascript:void(0)"><i class="ti-menu"></i></a></li>
+                    </ul>
+                    <ul class="navbar-nav my-lg-0">
+                        <li class="nav-item dropdown"><a th:href="@{'/logout'}" style="color: white"><i class="mdi mdi-logout"></i> LOGOUT</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+
+        <aside class="left-sidebar">
+            <div class="scrollSideMenu contentCustom light" id="content-i2d">
+                <nav class="sidebar-nav">
+                    <ul id="sidebarnav">
+                        <li> <a class="waves-effect waves-dark" th:href="@{'/dashboard'}" aria-expanded="false"><i class="mdi mdi-gauge"></i><span class="hide-menu">Dashboard</span></a></li>
+                        <li><a th:if="${access == 'Admin'}" th:href="@{'/user'}" class=""><i class="mdi mdi-account-settings-variant"></i>User</a>
+                         
+                        </li>
+                        <li><a th:if="${access == 'Admin'}" th:href="@{'/jabatan'}" class=""><i class="mdi mdi-account-box"></i>Jabatan</a>
+                         
+                        </li>
+                        <li><a th:if="${access == 'Camat' || access == 'Sekretaris'}" th:href="@{'/arsip'}" class=""><i class="mdi mdi-file-document"></i>Arsip</a>
+                        
+                        </li>
+                        <li><a th:if="${access == 'Staff Arsip'}" th:href="@{'/arsip/new'}" class=""><i class="mdi mdi-note-plus"></i>Registrasi Document</a>
+                        
+                        </li>
+                        <li><a th:if="${access == 'Camat' || access == 'Sekretaris' || access == 'Staff Arsip'}" th:href="@{'/arsip/temp'}" class=""><i class="mdi mdi-checkbox-marked-outline"></i>Document Review</a>
+                        
+                      
+                        
+                        </li>
+                        <li><a th:if="${access == 'Admin' || access == 'Camat'}" th:href="@{'/riwayat'}" class=""><i class="mdi mdi-receipt"></i>Riwayat Aktivitas</a>
+                         
+                         
+                        </li>
+                        
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+    </div>
+    <div th:replace="fragments/mainFooter::footer"></div>
+    <script>
+    $(document).ready(function() {
+    	$('#idLogout').click(function() {
+    		debugger;
+    		let url = new URL(window.location.href);
+    		url = 'http://localhost:8889/logout';
+    			$.ajax({
+    				type : 'get',
+    				url : url,
+    				success : function(data) {
+    					window.location.href = "/login"
+    				},
+    			});
+    	});
+    });
+    
+    </script>
+    
+</body>
+
+</html>

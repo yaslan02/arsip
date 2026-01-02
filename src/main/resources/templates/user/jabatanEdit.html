@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/mainHeader::header">
+    <meta charset="utf-8"/>
+    <title>Jabatan</title>
+</head>
+
+<body class="fix-header card-no-border">
+    <div id="main-wrapper">
+    	<div th:replace="fragments/mainMenu::menu"></div>
+
+        <div class="page-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                            	<div class="row">
+	                            	<div class="col-12">
+	                                	<h4 class="card-title">Jabatan</h4>
+	                                	<h6 class="card-subtitle"><a th:href="@{'/dashboard'}">Dashboard</a> / <a th:href="@{'/user'}">Jabatan</a> / Edit</h6>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 grid-margin stretch-card">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <form class="cmxform" id="jabatanForm" method="post" th:action="@{/jabatan/update}" autocomplete="off">
+                                                    <input type="text" th:field="${jabatan.id}" hidden/>
+                                                    <fieldset>
+                                                       <div class="form-group row p-b-15">
+															<label
+																class="col-sm-3 text-right control-label col-form-label"><span
+																class="text-danger">*</span> Nama Jabatan</label>
+															<div class="col-sm-7">
+																<input type="text" th:field="${jabatan.name}"
+																	class="form-control"
+																	placeholder="Silahkan isi nama jabatan" maxlength="100"
+																	autocomplete="off" required />
+															</div>
+														</div>
+														
+                                                        <input class="btn btn-info" type="submit" value="Save"/>
+                                                        <a th:href="@{/jabatan}" type="button" class="btn btn-inverse">Cancel</a>
+                                                    </fieldset>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+         
+    </div>
+    <div th:replace="fragments/mainFooter::footer"></div>
+</body>
+</html>

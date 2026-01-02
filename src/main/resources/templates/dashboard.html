@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/mainHeader::header">
+<meta charset="utf-8" />
+<title>Penjualan</title>
+</head>
+
+<body class="fix-header card-no-border">
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+	<script src="https://code.highcharts.com/highcharts-3d.js"></script>
+	<script src="https://code.highcharts.com/modules/cylinder.js"></script>
+	<script src="https://code.highcharts.com/modules/exporting.js"></script>
+	<script src="https://code.highcharts.com/modules/export-data.js"></script>
+	<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+	<div id="main-wrapper">
+		<div th:replace="fragments/mainMenu::menu"></div>
+
+		<div class="page-wrapper">
+			<div class="container-fluid">
+		        <div class="card">
+		            <p>Selamat Datang <strong><span style="font-size:20px" th:text="${username}"></span></strong></p>  
+		            <p>Anda berhasil masuk ke halaman dashboard.</p>
+		        </div>
+				<!-- <div class="row">
+					<div class="col-12">
+						<div class="card">
+							<div class="card-body">
+								<div class="row">
+									<div class="form-group row p-b-15">
+									 
+										<label
+											class="col-sm-4 text-right control-label col-form-label"><span></span>
+											Bulan</label>
+										<div class="col-sm-8">
+											<select id="month" class="form-control" style="width: 200px">
+												<option value="00" disabled>--Pilih Bulan--</option>
+												<option value="01">Januari</option>
+												<option value="02">Februari</option>
+												<option value="03">Maret</option>
+												<option value="04">April</option>
+												<option value="05">Mei</option>
+												<option value="06">Juni</option>
+												<option value="07">Juli</option>
+												<option value="08">Agustus</option>
+												<option value="09">September</option>
+												<option value="10">Oktober</option>
+												<option value="11">November</option>
+												<option value="12">Desember</option>
+											</select>
+										</div>
+									</div>
+
+									<div style="margin-left: 20px" class="form-group row p-b-15">
+										<label
+											class="col-sm-4 text-right control-label col-form-label"><span></span>
+											Tahun</label>
+										<div class="col-sm-8" >
+											<select id="year" class="form-control" style="width: 200px">
+												<option value="00" disabled>--Pilih Tahun--</option>
+											</select>
+										</div>
+									</div>
+									<div class="form-group row p-b-15">
+										<div class="col-sm-4" style="margin-left: 40px">
+											<button type="button" id="idFIlter"
+												class="btn waves-effect waves-light btn-info">
+												<i></i>Filter
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div>
+							<div id="container"></div>
+						</div>
+						
+					</div>
+				</div>
+			</div> -->
+			<!-- <div class="col-12" id="idData">
+								<div class="card">
+									<div class="card-body">
+										<div class="row">
+											<div class="col-5">
+												<h4 class="card-title">Data Tidak Ditemukan !</h4>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div> -->
+		</div>
+
+		<div th:replace="fragments/mainFooter::footer"></div>
+		<script>
+			$(document).ready(function() {
+				
+				$('select option[value="00"]').attr("selected",true);
+				
+				var currentMonth = (new Date).getMonth() + 1 < 10 ? '0'+ ((new Date).getMonth() + 1) : (new Date).getMonth() + 1;
+				var currentYear = new Date().getFullYear();
+				
+				function getMonth(currentMonth){
+					var month = "";
+					if('01' == currentMonth){
+						month = "Januari";
+					}
+					if('02' == currentMonth){
+						month = "Februari";
+					}
+					if('03' == currentMonth){
+						month = "Maret";
+					}
+					if('04' == currentMonth){
+						month = "April";
+					}
+					if('05' == currentMonth){
+						month = "Mei";
+					}
+					if('06' == currentMonth){
+						month = "Juni";
+					}
+					if('07' == currentMonth){
+						month = "Juli";
+					}
+					if('08' == currentMonth){
+						month = "Agustus";
+					}
+					if('09' == currentMonth){
+						month = "September";
+					}
+					if('10' == currentMonth){
+						month = "Oktober";
+					}
+					if('11' == currentMonth){
+						month = "November";
+					}
+					if('12' == currentMonth){
+						month = "Desember";
+					}
+					
+					return month;
+				}
+				
+				
+				function getData(currentYear, currentMonth){
+					let url = new URL(window.location.href);
+					var date = currentMonth+'-'+currentYear;
+					url = 'http://localhost:8889';
+						$.ajax({
+							type : 'get',
+							url : url + '/grafik?date='+date,
+							success : function(data) {
+								var json = JSON.parse(data);
+								var month = getMonth(currentMonth);
+								if(json.keys.length > 0){
+									$( "#idData" ).hide();
+									$( "#container" ).show();
+									graph(month, currentYear, json.keys, json.values);
+								}else{
+									$( "#container" ).hide();
+									$( "#idData" ).show();
+								}
+								
+							},
+						});
+				}
+
+				getData(currentYear, currentMonth);
+				getYear();
+								
+				$('#idFIlter').click(function() {
+					var valueMonth = $('#month').find(":selected").val();
+					var valueYear = $('#year').find(":selected").val();
+					
+					if(valueMonth == '00' || valueYear == '00'){
+						return;
+					}else{
+						getData(valueYear, valueMonth);
+					}
+				})
+				
+				function getYear(){
+					
+					var currentYear = new Date().getFullYear();
+					var lastYear = currentYear - 1990;
+					
+					for(var i = currentYear;i > currentYear - lastYear ; i--){
+						$("#year").append('<option value="'+ i.toString() +'">' +i.toString() +'</option>');
+					}
+				}
+
+				function graph(month, currentYear, keys, values) {
+					
+					const chart = new Highcharts.Chart({
+							chart : {
+								renderTo : 'container',
+								type : 'cylinder',
+								options3d : {
+									enabled : true,
+									alpha : 15,
+									beta : 15,
+									depth : 50,
+									viewDistance : 25
+								}
+								},
+								xAxis : {
+									categories : keys,
+									title : {
+										text : 'Nama Item'
+									},
+									labels : {
+										skew3d : true
+									}
+								},
+								yAxis : {
+									title : {
+										margin : 25,
+										text : 'Total Order'
+									},
+									labels : {
+										skew3d : true
+									}
+								},
+								tooltip : {
+									headerFormat : '<b>{point.key}</b><br>',
+									pointFormat : 'Cars sold: {point.y}'
+								},
+								title : {
+									text : 'Data Penjualan Bulan ' + month + ' Tahun ' + currentYear,
+									align : 'left'
+								},
+								subtitle : {
+									text : 'Source: '
+											+ '<a href="https://ofv.no/registreringsstatistikk"' +
+			            					'target="_blank">OFV</a>',
+										align : 'left'
+									},
+									legend : {
+										enabled : false
+									},
+									plotOptions : {
+										series : {
+											depth : 40,
+											colorByPoint : true
+										}
+									},
+									series : [ {
+										data : values,
+										colorByPoint : true
+									} ]
+								});
+							}
+					});
+		</script>
+
+	</div>
+</body>
+
+</html>
